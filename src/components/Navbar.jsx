@@ -26,10 +26,10 @@ export default function Navbar() {
             <div className="flex-shrink-0">
               <HusmahLogo />
             </div>
-            
+
             {/* Company Name */}
             <div className="flex flex-col">
-              <h1 className=" font-bold text-[#0067bc] tracking-wide" style={{ fontSize: '2.3rem', padding: '0',gap: '0.5rem' }}>
+              <h1 className=" font-bold text-[#0067bc] tracking-wide" style={{ fontSize: '2.3rem', padding: '0', gap: '0.5rem' }}>
                 HUSMA
               </h1>
               <span className="text-gray-600 font-medium" style={{ marginTop: '-0.6rem', fontSize: '1.3rem' }}>
@@ -54,7 +54,7 @@ export default function Navbar() {
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:focus:ring-red-500 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
