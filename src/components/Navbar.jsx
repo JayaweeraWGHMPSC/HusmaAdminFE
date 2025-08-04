@@ -17,29 +17,29 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white shadow-md border-b border-gray-200" style={{ width: '100vw' }}>
+    <nav className="bg-white shadow-md border-b border-gray-200">
       <div className="max-w-7xl h-20 mx-auto px-4 sm:px-6 lg:px-8" style={{ padding: '0.5rem 0.5rem' }}>
         <div className="flex justify-between items-center h-16">
           {/* Left side - Logo and Company Name */}
-          <div className="flex items-center space-x-1 sm:space-x-1">
+          <div className="flex items-center space-x-4">
             {/* Logo */}
-            <div className="flex-shrink-0 scale-75 sm:scale-90 md:scale-100">
+            <div className="flex-shrink-0">
               <HusmahLogo />
             </div>
 
             {/* Company Name */}
             <div className="flex flex-col">
-              <h1 className="font-bold text-[#0067bc] tracking-wide text-xl sm:text-2xl md:text-3xl lg:text-4xl" style={{ padding: '0', gap: '0.5rem' }}>
+              <h1 className=" font-bold text-[#0067bc] tracking-wide" style={{ fontSize: '2.3rem', padding: '0', gap: '0.5rem' }}>
                 HUSMA
               </h1>
-              <span className="text-gray-600 font-medium text-sm sm:text-base md:text-lg lg:text-xl" style={{ marginTop: '-0.3rem sm:-0.4rem md:-0.6rem' }}>
+              <span className="text-gray-600 font-medium" style={{ marginTop: '-0.6rem', fontSize: '1.3rem' }}>
                 ENGINEERING
               </span>
             </div>
           </div>
 
-          {/* Right side - Action Buttons (Desktop only) */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Right side - Action Buttons */}
+          <div className="flex items-center space-x-4">
             {/* Give Access Button */}
             <button
               onClick={handleGiveAccess}
@@ -54,12 +54,7 @@ export default function Navbar() {
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:focus:ring-red-500 transition-colors duration-200"
-              style={{
-                backgroundColor: isMenuOpen ? '#e00320ff' : '',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#e00320ff')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '')}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:focus:ring-red-500 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
