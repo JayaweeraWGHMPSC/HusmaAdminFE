@@ -239,6 +239,7 @@ export default function AddNew() {
                 accept="image/*"
                 multiple
                 onChange={handleAllImagesChange}
+                required
                 style={{ color: '#7F7F7F' }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
               />
@@ -317,6 +318,7 @@ export default function AddNew() {
                   onChange={(e) => handleOptionalFieldChange('area', e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                  style={{ color: 'black' }}
                   placeholder="Enter area details (e.g., 2500 sq ft, land area, built-up area, etc.)"
                 />
               )}
@@ -347,6 +349,7 @@ export default function AddNew() {
                   onChange={(e) => handleOptionalFieldChange('flow', e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                  style={{ color: 'black' }}
                   placeholder="Enter flow details (e.g., layout flow, room connections, circulation patterns, etc.)"
                 />
               )}
@@ -377,6 +380,7 @@ export default function AddNew() {
                   onChange={(e) => handleOptionalFieldChange('bedrooms', e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                  style={{ color: 'black' }}
                   placeholder="Enter bedroom details (e.g., 3 bedrooms, master bedroom with en-suite, etc.)"
                 />
               )}
@@ -407,6 +411,7 @@ export default function AddNew() {
                   onChange={(e) => handleOptionalFieldChange('bathrooms', e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                  style={{ color: 'black' }}
                   placeholder="Enter bathroom details (e.g., 2 bathrooms, 1 en-suite, powder room, etc.)"
                 />
               )}
