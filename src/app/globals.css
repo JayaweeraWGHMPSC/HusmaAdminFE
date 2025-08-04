@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  
+  /* Husmah Engineering Color Palette */
+  --husmah-primary: #1E88E5;
+  --husmah-primary-dark: #1565C0;
+  --husmah-primary-light: #42A5F5;
+  --husmah-secondary: #9E9E9E;
+  --husmah-secondary-dark: #424242;
+  --husmah-accent: #0D47A1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom utility classes for Husmah branding */
+.text-husmah-primary {
+  color: var(--husmah-primary);
+}
+
+.bg-husmah-primary {
+  background-color: var(--husmah-primary);
+}
+
+.border-husmah-primary {
+  border-color: var(--husmah-primary);
+}
