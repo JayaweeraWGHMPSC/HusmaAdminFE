@@ -123,9 +123,9 @@ export default function ChangePassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-white py-4 sm:py-6 lg:py-8 px-2 sm:px-4 lg:px-8">
+      <div className="w-full max-w-2xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 lg:p-8 w-full">
           <div className="text-center mb-6">
             <h1 className="text-2xl sm:text-3xl font-bold text-husmah-primary mb-2">
               Change Password
