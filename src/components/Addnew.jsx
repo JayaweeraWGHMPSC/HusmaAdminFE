@@ -159,14 +159,14 @@ export default function AddNew() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-husmah-primary mb-8 text-center">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 lg:p-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-husmah-primary mb-6 sm:mb-8 text-center">
             Add New Project
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Project Name */}
             <div>
               <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -438,17 +438,17 @@ export default function AddNew() {
             </div>
 
             {/* Form Actions */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-6">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6">
               <button
                 type="submit"
-                className="flex-1 bg-husmah-primary text-white py-3 px-6 rounded-md hover:bg-husmah-primary-dark transition-colors font-medium"
+                className="flex-1 bg-husmah-primary text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-md hover:bg-husmah-primary-dark transition-colors font-medium text-sm sm:text-base"
               >
                 Add Project
               </button>
               <button
                 type="button"
                 onClick={handleReset}
-                className="flex-1 bg-gray-500 text-white py-3 px-6 rounded-md hover:bg-gray-600 transition-colors font-medium"
+                className="flex-1 bg-gray-500 text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm sm:text-base"
               >
                 Reset Form
               </button>
