@@ -92,12 +92,30 @@ const Access = () => {
     setShowConfirmPopup(false);
     setIsSubmitting(true);
     try {
-      // Here you would typically send the data to your backend
-      console.log('Creating user access:', formData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      // Prepare payload for API
+      const payload = {
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        position: formData.position
+      };
+
+      const response = await fetch('http://localhost:5001/api/user/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        let errorMsg = errorData.message || 'Failed to create user access. Please try again.';
+        alert(errorMsg);
+        setIsSubmitting(false);
+        return;
+      }
+
       // Reset form on success
       setFormData({
         name: '',
@@ -107,8 +125,6 @@ const Access = () => {
         confirmPassword: ''
       });
       setErrors({});
-      
-      // Show success popup
       setShowSuccessPopup(true);
     } catch (error) {
       console.error('Error creating user access:', error);
@@ -119,8 +135,8 @@ const Access = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6 px-4 sm:px-6 lg:px-8 ">
-      <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="min-h-screen bg-white py-6 px-2 sm:px-4 lg:px-8 ">
+      <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
         {/* Header */}
         <div className="bg-white-600 px-6 py-4 mt-5">
           <h2 className="text-3xl font-bold text-husmah-primary text-center">
@@ -311,45 +327,33 @@ const Access = () => {
 
       {/* Confirmation Popup */}
       {showConfirmPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="flex-shrink-0">
-                  <svg className="h-6 w-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.862-.833-2.632 0L4.182 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    Confirm User Creation
-                  </h3>
-                </div>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-3">
-                  Are you sure you want to create access for the following user?
-                </p>
-                <div className="bg-gray-50 p-3 rounded-md">
-                  <p className="text-sm"><strong>Name:</strong> {formData.name}</p>
-                  <p className="text-sm"><strong>Position:</strong> {formData.position === 'admin' ? 'Admin' : 'Super Admin'}</p>
-                  <p className="text-sm"><strong>Email:</strong> {formData.email}</p>
-                </div>
-              </div>
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => setShowConfirmPopup(false)}
-                  className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleConfirmedSubmit}
-                  className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
-                >
-                  Confirm
-                </button>
-              </div>
+        <div className="absolute left-0 right-0 mx-auto top-1/2 -translate-y-1/2 z-50 flex justify-center pointer-events-none">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl border border-gray-200 pointer-events-auto">
+            <div className="flex items-center mb-4">
+              <svg className="h-7 w-7 text-orange-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.862-.833-2.632 0L4.182 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-900">Confirm User Creation</h3>
+            </div>
+            <p className="text-sm text-gray-700 mb-3">Are you sure you want to create access for the following user?</p>
+            <div className="bg-gray-50 p-3 rounded-md mb-4">
+              <p className="text-sm"><strong>Name:</strong> {formData.name}</p>
+              <p className="text-sm"><strong>Position:</strong> {formData.position === 'admin' ? 'Admin' : 'Super Admin'}</p>
+              <p className="text-sm"><strong>Email:</strong> {formData.email}</p>
+            </div>
+            <div className="flex gap-3 mt-2">
+              <button
+                onClick={() => setShowConfirmPopup(false)}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmedSubmit}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              >
+                Confirm
+              </button>
             </div>
           </div>
         </div>
@@ -357,27 +361,21 @@ const Access = () => {
 
       {/* Success Popup */}
       {showSuccessPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6 text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-                <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Success!
-              </h3>
-              <p className="text-sm text-gray-600 mb-6">
-                User access has been created successfully. The user will receive login credentials via email.
-              </p>
-              <button
-                onClick={() => setShowSuccessPopup(false)}
-                className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
-              >
-                Close
-              </button>
+        <div className="fixed left-0 right-0 mx-auto top-8 z-50 flex justify-center pointer-events-none">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl border border-gray-200 pointer-events-auto text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+              <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
             </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Success!</h3>
+            <p className="text-sm text-gray-700 mb-6">User access has been created successfully. The user will receive login credentials via email.</p>
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

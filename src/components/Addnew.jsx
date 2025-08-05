@@ -6,6 +6,7 @@ export default function AddNew() {
   const [formData, setFormData] = useState({
     projectName: '',
     description: '',
+    status: 'Ongoing',
     mainImage: null,
     allImages: [],
     area: {
@@ -29,6 +30,8 @@ export default function AddNew() {
 
   const [imagePreview, setImagePreview] = useState(null);
   const [allImagesPreviews, setAllImagesPreviews] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -135,17 +138,101 @@ export default function AddNew() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
-    // Here you would typically send the data to your backend API
-    alert('Project data submitted! Check console for details.');
+    setIsSubmitting(true);
+
+    // Cloudinary config (replace with your own values)
+    const cloudName = 'ddptresnb'; // TODO: replace with your Cloudinary cloud name
+    const uploadPreset = 'husmaprojects'; // TODO: replace with your unsigned upload preset
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+    // Helper to upload a single file to Cloudinary
+    const uploadToCloudinary = async (file) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', uploadPreset);
+      const res = await fetch(cloudinaryUrl, {
+        method: 'POST',
+        body: formData
+      });
+      if (!res.ok) throw new Error('Image upload failed');
+      const data = await res.json();
+      return data.secure_url;
+    };
+
+    let mainImageUrl = '';
+    let allImagesUrls = [];
+    try {
+      // Upload main image if present
+      if (formData.mainImage) {
+        mainImageUrl = await uploadToCloudinary(formData.mainImage);
+      }
+      // Upload all images if present
+      if (formData.allImages.length > 0) {
+        allImagesUrls = [];
+        for (const file of formData.allImages) {
+          const url = await uploadToCloudinary(file);
+          allImagesUrls.push(url);
+        }
+      }
+    } catch (err) {
+      setIsSubmitting(false);
+      console.error('Image upload failed. Please try again.');
+      return;
+    }
+
+    // Parse area, flow, bedrooms, bathrooms from details if enabled, else fallback to 0
+    const parseNumber = (val) => {
+      if (!val) return 0;
+      const n = parseFloat(val);
+      return isNaN(n) ? 0 : n;
+    };
+
+    const payload = {
+      name: formData.projectName,
+      description: formData.description,
+      status: formData.status,
+      mainImage: mainImageUrl,
+      allImages: allImagesUrls,
+      area: formData.area.enabled ? parseNumber(formData.area.details) : 0,
+      flow: formData.flow.enabled ? parseNumber(formData.flow.details) : 0,
+      bedrooms: formData.bedrooms.enabled ? parseNumber(formData.bedrooms.details) : 0,
+      bathrooms: formData.bathrooms.enabled ? parseNumber(formData.bathrooms.details) : 0,
+      customerFeedback: formData.customerFeedback
+    };
+
+    try {
+      const response = await fetch('http://localhost:5001/api/project/comprehensive', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        let errorMsg = errorData.message || 'Failed to create project. Please try again.';
+        alert(errorMsg);
+        setIsSubmitting(false);
+        return;
+      }
+
+      setShowSuccessPopup(true);
+      handleReset();
+    } catch (error) {
+      console.error('Error creating project:', error);
+      alert('Failed to create project. Please try again.');
+    }
+    setIsSubmitting(false);
   };
 
   const handleReset = () => {
     setFormData({
       projectName: '',
       description: '',
+      status: 'Ongoing',
       mainImage: null,
       allImages: [],
       area: { enabled: false, details: '' },
@@ -159,14 +246,51 @@ export default function AddNew() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8 relative">
+      {showSuccessPopup && (
+        <div className="absolute left-0 right-0 mx-auto top-8 z-50 flex justify-center pointer-events-none">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl border border-gray-200 pointer-events-auto text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+              <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Success!</h3>
+            <p className="text-sm text-gray-700 mb-6">Project has been created successfully.</p>
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 lg:p-8">
+        <div className="bg-white rounded-lg p-4 sm:p-6 lg:p-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-husmah-primary mb-6 sm:mb-8 text-center">
             Add New Project
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            {/* Status */}
+            <div>
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+                Status *
+              </label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                style={{ color: 'gray' }}
+              >
+                <option value="Ongoing">Ongoing</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
             {/* Project Name */}
             <div>
               <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -441,14 +565,16 @@ export default function AddNew() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6">
               <button
                 type="submit"
-                className="flex-1 bg-husmah-primary text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-md hover:bg-husmah-primary-dark transition-colors font-medium text-sm sm:text-base"
+                disabled={isSubmitting}
+                className={`flex-1 bg-husmah-primary text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-md transition-colors font-medium text-sm sm:text-base ${isSubmitting ? 'opacity-60 cursor-not-allowed' : 'hover:bg-husmah-primary-dark'}`}
               >
-                Add Project
+                {isSubmitting ? 'Processing...' : 'Add Project'}
               </button>
               <button
                 type="button"
                 onClick={handleReset}
-                className="flex-1 bg-gray-500 text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm sm:text-base"
+                disabled={isSubmitting}
+                className={`flex-1 bg-gray-500 text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-md transition-colors font-medium text-sm sm:text-base ${isSubmitting ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-600'}`}
               >
                 Reset Form
               </button>
