@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import HusmahLogo from './HusmahLogo'
 
-export default function Navbar({ currentPage, setCurrentPage }) {
+export default function Navbar({ currentPage, setCurrentPage, user, onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuRef = useRef(null)
 
@@ -25,8 +25,10 @@ export default function Navbar({ currentPage, setCurrentPage }) {
   }, [isMenuOpen])
 
   const handleLogout = () => {
-    // Add logout logic here
-    console.log('Logout clicked')
+    if (onLogout) {
+      onLogout();
+    }
+    setIsMenuOpen(false);
   }
 
   const handleGiveAccess = () => {
@@ -113,6 +115,21 @@ export default function Navbar({ currentPage, setCurrentPage }) {
               <span className="xl:hidden">Password</span>
             </button>
 
+            {/* User Info (Desktop) */}
+            {user && (
+              <div className="hidden lg:flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-md">
+                <div className="flex flex-col text-right">
+                  <span className="text-xs font-medium text-gray-900">{user.name}</span>
+                  <span className="text-xs text-gray-500">{user.email}</span>
+                </div>
+                <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">
+                    {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Logout Button */}
             <button
               onClick={handleLogout}
@@ -152,6 +169,23 @@ export default function Navbar({ currentPage, setCurrentPage }) {
             className="md:hidden absolute right-4 top-16 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-48"
           >
             <div className="py-2">
+              {/* User Info (Mobile) */}
+              {user && (
+                <div className="px-4 py-3 border-b border-gray-200">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg font-medium">
+                        {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-900">{user.name}</span>
+                      <span className="text-xs text-gray-500">{user.email}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <button
                 onClick={() => {
                   handleProject();
