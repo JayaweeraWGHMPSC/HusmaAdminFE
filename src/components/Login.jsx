@@ -108,18 +108,18 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8">
         <div>
           {/* Logo Section */}
-          <div className="flex justify-center mb-8">
-            <div className="bg-white p-6 rounded-full shadow-lg flex items-center justify-center w-24 h-24">
-              <HusmahLogo className="w-12 h-12" />
+          <div className="flex justify-center mb-6 sm:mb-8">
+            <div className="bg-white p-4 sm:p-6 rounded-full shadow-lg flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24">
+              <HusmahLogo className="w-10 h-10 sm:w-12 sm:h-12" />
             </div>
           </div>
           
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Admin Login
             </h2>
             <p className="mt-2 text-sm text-gray-600">
@@ -128,7 +128,7 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="bg-white py-8 px-4 shadow-xl rounded-lg sm:px-10">
+        <div className="bg-white py-6 sm:py-8 px-4 sm:px-6 lg:px-10 shadow-xl rounded-lg">
           {/* General Error Message */}
           {errors.general && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
@@ -136,7 +136,7 @@ export default function Login() {
             </div>
           )}
 
-          <form className="space-y-6" onSubmit={handleEmailLogin}>
+          <form className="space-y-4 sm:space-y-6" onSubmit={handleEmailLogin}>
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
