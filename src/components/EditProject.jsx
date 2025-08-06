@@ -412,6 +412,57 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="px-3 sm:px-6 py-4 sm:py-6 space-y-3 sm:space-y-4">
+          {/* Success Popup */}
+          {showSuccessPopup && (
+            <div className="mb-4">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 shadow-lg">
+                <div className="flex items-center justify-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-green-800">
+                      Project updated successfully
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Error Popup */}
+          {error && (
+            <div className="mb-4">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 sm:h-6 sm:w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-red-800">
+                        {error}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setError(null)}
+                    className="text-red-400 hover:text-red-600"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Project Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -701,6 +752,50 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
             />
           </div>
 
+          {/* Confirm Popup */}
+          {showConfirmPopup && (
+            <div className="my-6">
+              <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-6 shadow-lg">
+                <div className="text-center mb-4">
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
+                    <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    Confirm Changes
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Are you sure you want to save the changes to this project?
+                    {(mainImageFile || additionalImageFiles.length > 0 || imagesToRemove.length > 0) && (
+                      <span className="block mt-3 text-sm">
+                        {mainImageFile && <span className="block text-blue-600 mb-1">• Main image will be updated</span>}
+                        {additionalImageFiles.length > 0 && <span className="block text-green-600 mb-1">• {additionalImageFiles.length} new image(s) will be added</span>}
+                        {imagesToRemove.length > 0 && <span className="block text-red-600 mb-1">• {imagesToRemove.length} image(s) will be removed</span>}
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPopup(false)}
+                    className="w-full sm:w-auto px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 order-2 sm:order-1"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmedSubmit}
+                    className="w-full sm:w-auto px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 order-1 sm:order-2"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Submit Button */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-end">
             <button
@@ -725,91 +820,6 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
           </div>
         </form>
       </div>
-
-      {/* Confirm Popup */}
-      {showConfirmPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowConfirmPopup(false)}></div>
-          <div className="bg-white rounded-lg p-4 sm:p-6 max-w-sm sm:max-w-md w-full shadow-xl border border-gray-200 relative">
-            <div className="text-center mb-3 sm:mb-4">
-              <div className="mx-auto flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-blue-100 mb-3 sm:mb-4">
-                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
-                Confirm Changes
-              </h3>
-              <p className="text-sm text-gray-600">
-                Are you sure you want to save the changes to this project?
-                {(mainImageFile || additionalImageFiles.length > 0 || imagesToRemove.length > 0) && (
-                  <span className="block mt-2 text-xs">
-                    {mainImageFile && <span className="block text-blue-600">• Main image will be updated</span>}
-                    {additionalImageFiles.length > 0 && <span className="block text-green-600">• {additionalImageFiles.length} new image(s) will be added</span>}
-                    {imagesToRemove.length > 0 && <span className="block text-red-600">• {imagesToRemove.length} image(s) will be removed</span>}
-                  </span>
-                )}
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-center">
-              <button
-                onClick={() => setShowConfirmPopup(false)}
-                className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 order-2 sm:order-1"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmedSubmit}
-                className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 order-1 sm:order-2"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Success Popup */}
-      {showSuccessPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowSuccessPopup(false)}></div>
-          <div className="bg-white rounded-lg p-4 shadow-xl border border-gray-200 relative">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-900">
-                  Project updated successfully
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Error Popup */}
-      {error && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setError(null)}></div>
-          <div className="bg-white rounded-lg p-4 shadow-xl border border-red-200 relative">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-900">
-                  {error}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
