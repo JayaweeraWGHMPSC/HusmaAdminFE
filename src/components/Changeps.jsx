@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ChangePassword() {
   const [formData, setFormData] = useState({
@@ -8,6 +8,7 @@ export default function ChangePassword() {
     newPassword: '',
     confirmPassword: ''
   });
+  const [userEmail, setUserEmail] = useState('');
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
@@ -16,6 +17,19 @@ export default function ChangePassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Get user email from localStorage or session when component mounts
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUserEmail(userData.email || '');
+      } catch (error) {
+        console.error('Error parsing stored user data:', error);
+      }
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +55,11 @@ export default function ChangePassword() {
 
   const validateForm = () => {
     const newErrors = {};
+    
+    // Check if user email is available
+    if (!userEmail) {
+      newErrors.general = 'User email not found. Please log in again.';
+    }
     
     // Current password validation
     if (!formData.currentPassword) {
@@ -81,13 +100,42 @@ export default function ChangePassword() {
     setSuccessMessage('');
     
     try {
-      // Simulate API call - Replace with your actual password change logic
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log('Password change attempted:', {
-        currentPassword: formData.currentPassword,
+      // Prepare the request payload
+      const requestData = {
+        email: userEmail,
+        oldPassword: formData.currentPassword,
         newPassword: formData.newPassword
+      };
+      
+      console.log('Sending password change request:', {
+        email: requestData.email,
+        oldPassword: '***',
+        newPassword: '***'
       });
+      
+      const response = await fetch('http://localhost:5001/api/Auth/user-change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('Password change failed:', errorData);
+        
+        if (response.status === 400) {
+          throw new Error('Invalid current password or request data');
+        } else if (response.status === 404) {
+          throw new Error('User not found');
+        } else {
+          throw new Error(`Server error: ${response.status}`);
+        }
+      }
+      
+      const result = await response.json();
+      console.log('Password change successful:', result);
       
       setSuccessMessage('Password changed successfully!');
       
@@ -98,15 +146,9 @@ export default function ChangePassword() {
         confirmPassword: ''
       });
       
-      // Here you would typically:
-      // 1. Send current and new password to your backend
-      // 2. Verify current password
-      // 3. Update password in database
-      // 4. Show success message
-      
     } catch (error) {
       console.error('Password change error:', error);
-      setErrors({ general: 'Failed to change password. Please try again.' });
+      setErrors({ general: error.message || 'Failed to change password. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -150,6 +192,16 @@ export default function ChangePassword() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            {/* Display Current User Email */}
+            <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Account Email
+              </label>
+              <p className="text-sm text-gray-900">
+                {userEmail || 'Email not found - please log in again'}
+              </p>
+            </div>
+
             {/* Current Password */}
             <div>
               <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-2">

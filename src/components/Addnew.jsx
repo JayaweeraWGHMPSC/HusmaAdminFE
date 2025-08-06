@@ -283,8 +283,9 @@ export default function AddNew() {
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
+                disabled={isSubmitting}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 style={{ color: 'gray' }}
               >
                 <option value="Ongoing">Ongoing</option>
@@ -302,8 +303,9 @@ export default function AddNew() {
                 name="projectName"
                 value={formData.projectName}
                 onChange={handleInputChange}
+                disabled={isSubmitting}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 style={{ color: 'black' }}
                 placeholder="Enter project name"
               />
@@ -319,9 +321,10 @@ export default function AddNew() {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
+                disabled={isSubmitting}
                 required
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 style={{ color: 'black' }}
                 placeholder="Enter project description"
               />
@@ -337,9 +340,10 @@ export default function AddNew() {
                 id="mainImage"
                 accept="image/*"
                 onChange={handleMainImageChange}
+                disabled={isSubmitting}
                 required
                 style={{ color: '#7F7F7F' }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
               />
               {imagePreview && (
                 <div className="mt-3">
@@ -363,25 +367,27 @@ export default function AddNew() {
                 accept="image/*"
                 multiple
                 onChange={handleAllImagesChange}
+                disabled={isSubmitting}
                 required
                 style={{ color: '#7F7F7F' }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
               />
               
               {/* Add More Images Button - Show only if there are already some images */}
               {formData.allImages.length > 0 && (
                 <div className="mt-3">
-                  <label htmlFor="addMoreImages" className="inline-block">
+                  <label htmlFor="addMoreImages" className={`inline-block ${isSubmitting ? 'pointer-events-none' : ''}`}>
                     <input
                       type="file"
                       id="addMoreImages"
                       accept="image/*"
                       multiple
                       onChange={handleAddMoreImages}
+                      disabled={isSubmitting}
                       style={{ color: 'gray' }}
                       className="hidden"
                     />
-                    <span className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors cursor-pointer text-sm font-medium">
+                    <span className={`bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors cursor-pointer text-sm font-medium ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}>
                       + Add More Images
                     </span>
                   </label>
@@ -405,7 +411,8 @@ export default function AddNew() {
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                          disabled={isSubmitting}
+                          className={`absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 ${isSubmitting ? 'cursor-not-allowed opacity-30' : ''}`}
                           title="Remove image"
                         >
                           ×
@@ -427,11 +434,12 @@ export default function AddNew() {
                 <button
                   type="button"
                   onClick={() => handleOptionalFieldToggle('area')}
+                  disabled={isSubmitting}
                   className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                     formData.area.enabled
                       ? 'bg-husmah-primary text-white'
                       : 'bg-gray-200 text-gray-700'
-                  }`}
+                  } ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
                   {formData.area.enabled ? 'Clear' : 'Add Details'}
                 </button>
@@ -440,8 +448,9 @@ export default function AddNew() {
                 <textarea
                   value={formData.area.details}
                   onChange={(e) => handleOptionalFieldChange('area', e.target.value)}
+                  disabled={isSubmitting}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                  className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                   style={{ color: 'black' }}
                   placeholder="Enter area details (e.g., 2500 sq ft, land area, built-up area, etc.)"
                 />
@@ -458,11 +467,12 @@ export default function AddNew() {
                 <button
                   type="button"
                   onClick={() => handleOptionalFieldToggle('flow')}
+                  disabled={isSubmitting}
                   className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                     formData.flow.enabled
                       ? 'bg-husmah-primary text-white'
                       : 'bg-gray-200 text-gray-700'
-                  }`}
+                  } ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
                   {formData.flow.enabled ? 'Clear' : 'Add Details'}
                 </button>
@@ -471,8 +481,9 @@ export default function AddNew() {
                 <textarea
                   value={formData.flow.details}
                   onChange={(e) => handleOptionalFieldChange('flow', e.target.value)}
+                  disabled={isSubmitting}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                  className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                   style={{ color: 'black' }}
                   placeholder="Enter flow details (e.g., layout flow, room connections, circulation patterns, etc.)"
                 />
@@ -489,11 +500,12 @@ export default function AddNew() {
                 <button
                   type="button"
                   onClick={() => handleOptionalFieldToggle('bedrooms')}
+                  disabled={isSubmitting}
                   className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                     formData.bedrooms.enabled
                       ? 'bg-husmah-primary text-white'
                       : 'bg-gray-200 text-gray-700'
-                  }`}
+                  } ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
                   {formData.bedrooms.enabled ? 'Clear' : 'Add Details'}
                 </button>
@@ -502,8 +514,9 @@ export default function AddNew() {
                 <textarea
                   value={formData.bedrooms.details}
                   onChange={(e) => handleOptionalFieldChange('bedrooms', e.target.value)}
+                  disabled={isSubmitting}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                  className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                   style={{ color: 'black' }}
                   placeholder="Enter bedroom details (e.g., 3 bedrooms, master bedroom with en-suite, etc.)"
                 />
@@ -520,11 +533,12 @@ export default function AddNew() {
                 <button
                   type="button"
                   onClick={() => handleOptionalFieldToggle('bathrooms')}
+                  disabled={isSubmitting}
                   className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                     formData.bathrooms.enabled
                       ? 'bg-husmah-primary text-white'
                       : 'bg-gray-200 text-gray-700'
-                  }`}
+                  } ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
                   {formData.bathrooms.enabled ? 'Clear' : 'Add Details'}
                 </button>
@@ -533,8 +547,9 @@ export default function AddNew() {
                 <textarea
                   value={formData.bathrooms.details}
                   onChange={(e) => handleOptionalFieldChange('bathrooms', e.target.value)}
+                  disabled={isSubmitting}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                  className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                   style={{ color: 'black' }}
                   placeholder="Enter bathroom details (e.g., 2 bathrooms, 1 en-suite, powder room, etc.)"
                 />
@@ -554,8 +569,9 @@ export default function AddNew() {
                 name="customerFeedback"
                 value={formData.customerFeedback}
                 onChange={handleInputChange}
+                disabled={isSubmitting}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent"
+                className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                 style={{ color: 'black' }}
                 placeholder="Enter customer feedback and testimonials"
               />

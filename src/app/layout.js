@@ -4,15 +4,11 @@ import { Inter } from 'next/font/google'
 import { useState, useEffect } from 'react'
 import './globals.css'
 import Navbar from '@/components/Navbar'
-import AddNew from '@/components/Addnew'
 import Login from '@/components/Login'
-import Changeps from '@/components/Changeps'
-import Access from '@/components/Access'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({ children }) {
-  const [currentPage, setCurrentPage] = useState('project'); // Default to project page
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,26 +47,11 @@ export default function RootLayout({ children }) {
     localStorage.removeItem('lastLoginAt');
     setUser(null);
     setIsAuthenticated(false);
-    setCurrentPage('project'); // Reset to default page
     setShowLogoutModal(false);
   };
 
   const cancelLogout = () => {
     setShowLogoutModal(false);
-  };
-
-  // Render the appropriate component based on current page
-  const renderCurrentPage = () => {
-    switch (currentPage) {
-      case 'project':
-        return <AddNew />;
-      case 'giveAccess':
-        return <Access />;
-      case 'changePassword':
-        return <Changeps />;
-      default:
-        return <AddNew />;
-    }
   };
 
   // Show loading spinner while checking authentication
@@ -110,19 +91,17 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <Navbar 
-          currentPage={currentPage} 
-          setCurrentPage={setCurrentPage}
           user={user}
           onLogout={handleLogout}
         />
         <div className="flex">
-          {/* Sidebar only on md+ screens */}
-          <div className="hidden md:block">
-            <Left user={user} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+          {/* Fixed Sidebar only on md+ screens */}
+          <div className="hidden md:block fixed left-0 top-16 h-screen z-30">
+            <Left user={user} />
           </div>
-          {/* Main Content */}
-          <main className="flex-1 pt-4 px-2 sm:px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-48">
-            {renderCurrentPage()}
+          {/* Main Content with left margin to account for fixed sidebar */}
+          <main className="flex-1 pt-20 px-2 sm:px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-48 md:ml-64">
+            {children}
           </main>
         </div>
         {/* Logout Confirmation Modal */}

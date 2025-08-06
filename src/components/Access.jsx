@@ -1,8 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Access = () => {
+  const [userPosition, setUserPosition] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [allUsers, setAllUsers] = useState([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     position: 'admin',
@@ -13,10 +17,191 @@ const Access = () => {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [emailCheckTimeout, setEmailCheckTimeout] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showRemoveConfirmPopup, setShowRemoveConfirmPopup] = useState(false);
+  const [showRemoveSuccessPopup, setShowRemoveSuccessPopup] = useState(false);
+  const [showRemoveErrorPopup, setShowRemoveErrorPopup] = useState(false);
+  const [removeErrorMessage, setRemoveErrorMessage] = useState('');
+  const [userToRemove, setUserToRemove] = useState(null);
+
+  // Check user position on component mount
+  useEffect(() => {
+    const checkUserPosition = async () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          const userEmail = userData.email;
+          
+          if (userEmail) {
+            // Fetch user details from API
+            const response = await fetch(`http://localhost:5001/api/Auth/user/${userEmail}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+
+            if (response.ok) {
+              const apiUserData = await response.json();
+              setUserPosition(apiUserData.position || '');
+            } else {
+              console.error('Failed to fetch user details from API');
+              // Fallback to localStorage data
+              setUserPosition(userData.position || '');
+            }
+          } else {
+            console.error('No email found in stored user data');
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          // Fallback to localStorage data if API fails
+          try {
+            const userData = JSON.parse(storedUser);
+            setUserPosition(userData.position || '');
+          } catch (parseError) {
+            console.error('Error parsing stored user data:', parseError);
+          }
+        }
+      }
+      setIsLoading(false);
+    };
+
+    checkUserPosition();
+  }, []);
+
+  // Fetch all users
+  const fetchAllUsers = async () => {
+    setIsLoadingUsers(true);
+    try {
+      const response = await fetch('http://localhost:5001/api/Auth/users', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const users = await response.json();
+        
+        // Get current logged-in user email
+        const storedUser = localStorage.getItem('user');
+        let currentUserEmail = '';
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser);
+            currentUserEmail = userData.email;
+          } catch (error) {
+            console.error('Error parsing stored user data:', error);
+          }
+        }
+        
+        // Filter out the current logged-in user
+        const filteredUsers = users.filter(user => user.email !== currentUserEmail);
+        setAllUsers(filteredUsers);
+      } else {
+        console.error('Failed to fetch users from API');
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
+
+  // Remove user function
+  const handleRemoveUser = (userEmail, userName) => {
+    setUserToRemove({ email: userEmail, name: userName });
+    setShowRemoveConfirmPopup(true);
+  };
+
+  // Confirm user removal
+  const confirmRemoveUser = async () => {
+    setShowRemoveConfirmPopup(false);
+    try {
+      const response = await fetch(`http://localhost:5001/api/Auth/user/${userToRemove.email}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setShowRemoveSuccessPopup(true);
+        // Refresh users list
+        fetchAllUsers();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setRemoveErrorMessage(errorData.message || 'Failed to remove user. Please try again.');
+        setShowRemoveErrorPopup(true);
+      }
+    } catch (error) {
+      console.error('Error removing user:', error);
+      setRemoveErrorMessage('Failed to remove user. Please try again.');
+      setShowRemoveErrorPopup(true);
+    } finally {
+      setUserToRemove(null);
+    }
+  };
+
+  // Fetch users when component mounts and user has superadmin access
+  useEffect(() => {
+    if (userPosition === 'superadmin') {
+      fetchAllUsers();
+    }
+  }, [userPosition]);
+
+  // Cleanup timeout on component unmount
+  useEffect(() => {
+    return () => {
+      if (emailCheckTimeout) {
+        clearTimeout(emailCheckTimeout);
+      }
+    };
+  }, [emailCheckTimeout]);
+
+  // If user is not superadmin, show access denied message
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (userPosition !== 'superadmin') {
+    return (
+      <div className="min-h-screen bg-white py-6 px-2 sm:px-4 lg:px-8">
+        <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-red-50 border border-red-200 px-6 py-8 text-center">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+              <svg className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.862-.833-2.632 0L4.182 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-red-800 mb-2">Access Denied</h2>
+            <p className="text-red-700 mb-4">
+              You don't have permission to access this feature. Only Super Admin users can manage user access.
+            </p>
+            
+            <button
+              onClick={() => window.history.back()}
+              className="px-6 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Handle input changes
   const handleInputChange = (e) => {
@@ -32,6 +217,67 @@ const Access = () => {
         ...prev,
         [name]: ''
       }));
+    }
+
+    // Check email availability when email field changes
+    if (name === 'email' && value.trim()) {
+      // Clear existing timeout
+      if (emailCheckTimeout) {
+        clearTimeout(emailCheckTimeout);
+      }
+      
+      // Set new timeout for debounced email checking
+      const newTimeout = setTimeout(() => {
+        checkEmailExists(value.trim());
+      }, 800); // Wait 800ms after user stops typing
+      
+      setEmailCheckTimeout(newTimeout);
+    } else if (name === 'email' && !value.trim()) {
+      // Clear timeout if email field is empty
+      if (emailCheckTimeout) {
+        clearTimeout(emailCheckTimeout);
+      }
+    }
+  };
+
+  // Check if email already exists in database
+  const checkEmailExists = async (email) => {
+    // Basic email format validation before API call
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return; // Don't check invalid email formats
+    }
+
+    setIsCheckingEmail(true);
+    try {
+      const response = await fetch(`http://localhost:5001/api/Auth/user/${email}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        // User exists - show error
+        setErrors(prev => ({
+          ...prev,
+          email: 'This email is already registered. Please use a different email address.'
+        }));
+      } else if (response.status === 404) {
+        // User doesn't exist - clear any existing email error
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          if (newErrors.email && newErrors.email.includes('already registered')) {
+            delete newErrors.email;
+          }
+          return newErrors;
+        });
+      }
+    } catch (error) {
+      console.error('Error checking email existence:', error);
+      // Don't show error to user for network issues during email check
+    } finally {
+      setIsCheckingEmail(false);
     }
   };
 
@@ -52,6 +298,9 @@ const Access = () => {
       newErrors.email = 'Email is required';
     } else if (!emailRegex.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
+    } else if (errors.email && errors.email.includes('already registered')) {
+      // If email already exists, keep the existing error
+      newErrors.email = errors.email;
     }
 
     // Password validation
@@ -111,7 +360,8 @@ const Access = () => {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         let errorMsg = errorData.message || 'Failed to create user access. Please try again.';
-        alert(errorMsg);
+        setErrorMessage(errorMsg);
+        setShowErrorPopup(true);
         setIsSubmitting(false);
         return;
       }
@@ -126,9 +376,13 @@ const Access = () => {
       });
       setErrors({});
       setShowSuccessPopup(true);
+      
+      // Refresh users list
+      fetchAllUsers();
     } catch (error) {
       console.error('Error creating user access:', error);
-      alert('Failed to create user access. Please try again.');
+      setErrorMessage('Failed to create user access. Please try again.');
+      setShowErrorPopup(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -136,19 +390,111 @@ const Access = () => {
 
   return (
     <div className="min-h-screen bg-white py-6 px-2 sm:px-4 lg:px-8 ">
-      <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-        {/* Header */}
-        <div className="bg-white-600 px-6 py-4 mt-5">
-          <h2 className="text-3xl font-bold text-husmah-primary text-center">
-            Create User Access
-          </h2>
-          <p className="text-black text-sm text-center mt-1">
-            Grant system access to new users
-          </p>
+      <div className="w-full max-w-6xl mx-auto space-y-6">
+        
+        {/* Existing Users Section */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-blue-50 px-6 py-4 border-b border-blue-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-blue-800">Existing Users</h2>
+                <p className="text-blue-600 text-sm mt-1">Manage system users and their access levels</p>
+              </div>
+              <button
+                onClick={fetchAllUsers}
+                disabled={isLoadingUsers}
+                className="px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
+              >
+                {isLoadingUsers ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Refreshing...
+                  </>
+                ) : (
+                  <>
+                    Refresh
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            {isLoadingUsers ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <span className="ml-3 text-gray-600">Loading users...</span>
+              </div>
+            ) : allUsers.length === 0 ? (
+              <div className="text-center py-8">
+                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+                <h3 className="mt-2 text-sm font-medium text-gray-900">No users found</h3>
+                <p className="mt-1 text-sm text-gray-500">Get started by creating a new user.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {allUsers.map((user) => (
+                      <tr key={user.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{user.email}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            user.position === 'superadmin' 
+                              ? 'bg-purple-100 text-purple-800' 
+                              : 'bg-blue-100 text-blue-800'
+                          }`}>
+                            {user.position === 'superadmin' ? 'Super Admin' : 'Admin'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <button
+                            onClick={() => handleRemoveUser(user.email, user.name)}
+                            className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                          >
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Remove
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="px-6 py-6 space-y-4">
+        {/* Create User Form */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          {/* Header */}
+          <div className="bg-green-50 px-6 py-4 border-b border-green-200">
+            <h2 className="text-2xl font-bold text-green-800">Create User Access</h2>
+            <p className="text-green-600 text-sm mt-1">Grant system access to new users</p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="px-6 py-6 space-y-4">
           {/* Name Field */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -194,20 +540,39 @@ const Access = () => {
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email Address *
             </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              style={{ color: 'black' }}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter email address"
-            />
+            <div className="relative">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                style={{ color: 'black' }}
+                className={`w-full px-3 py-2 pr-10 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.email ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter email address"
+              />
+              {/* Email checking indicator */}
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                {isCheckingEmail ? (
+                  <svg className="animate-spin h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : formData.email && !errors.email && formData.email.includes('@') ? (
+                  <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : null}
+              </div>
+            </div>
             {errors.email && (
               <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+            )}
+            {/* Email availability message */}
+            {!errors.email && formData.email && formData.email.includes('@') && !isCheckingEmail && (
+              <p className="mt-1 text-sm text-green-600">✓ Email is available</p>
             )}
           </div>
 
@@ -323,12 +688,12 @@ const Access = () => {
             * All fields are required. Password must be at least 8 characters with uppercase, lowercase, and number.
           </p>
         </div>
-      </div>
+        </div>
 
       {/* Confirmation Popup */}
       {showConfirmPopup && (
-        <div className="absolute left-0 right-0 mx-auto top-1/2 -translate-y-1/2 z-50 flex justify-center pointer-events-none">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl border border-gray-200 pointer-events-auto">
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4">
             <div className="flex items-center mb-4">
               <svg className="h-7 w-7 text-orange-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.862-.833-2.632 0L4.182 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -336,7 +701,7 @@ const Access = () => {
               <h3 className="text-lg font-semibold text-gray-900">Confirm User Creation</h3>
             </div>
             <p className="text-sm text-gray-700 mb-3">Are you sure you want to create access for the following user?</p>
-            <div className="bg-gray-50 p-3 rounded-md mb-4">
+            <div className="bg-gray-50 text-black p-3 rounded-md mb-4">
               <p className="text-sm"><strong>Name:</strong> {formData.name}</p>
               <p className="text-sm"><strong>Position:</strong> {formData.position === 'admin' ? 'Admin' : 'Super Admin'}</p>
               <p className="text-sm"><strong>Email:</strong> {formData.email}</p>
@@ -359,10 +724,46 @@ const Access = () => {
         </div>
       )}
 
+      {/* Remove User Confirmation Popup */}
+      {showRemoveConfirmPopup && userToRemove && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4">
+            <div className="flex items-center mb-4">
+              <svg className="h-7 w-7 text-red-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.862-.833-2.632 0L4.182 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-900">Confirm User Removal</h3>
+            </div>
+            <p className="text-sm text-gray-700 mb-3">Are you sure you want to remove access for the following user?</p>
+            <div className="bg-red-50 p-3 rounded-md mb-4 border border-red-200">
+              <p className="text-sm text-red-800"><strong>User:</strong> {userToRemove.name}</p>
+              <p className="text-xs text-red-600 mt-1">This action cannot be undone.</p>
+            </div>
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={() => {
+                  setShowRemoveConfirmPopup(false);
+                  setUserToRemove(null);
+                }}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmRemoveUser}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+              >
+                Remove User
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Success Popup */}
       {showSuccessPopup && (
-        <div className="fixed left-0 right-0 mx-auto top-8 z-50 flex justify-center pointer-events-none">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl border border-gray-200 pointer-events-auto text-center">
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4 text-center">
             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
               <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -379,6 +780,76 @@ const Access = () => {
           </div>
         </div>
       )}
+
+      {/* Create User Error Popup */}
+      {showErrorPopup && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4 text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Error</h3>
+            <p className="text-sm text-gray-700 mb-6">{errorMessage}</p>
+            <button
+              onClick={() => {
+                setShowErrorPopup(false);
+                setErrorMessage('');
+              }}
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Remove Success Popup */}
+      {showRemoveSuccessPopup && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4 text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+              <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">User Removed</h3>
+            <p className="text-sm text-gray-700 mb-6">User access has been removed successfully.</p>
+            <button
+              onClick={() => setShowRemoveSuccessPopup(false)}
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Remove Error Popup */}
+      {showRemoveErrorPopup && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4 text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Error</h3>
+            <p className="text-sm text-gray-700 mb-6">{removeErrorMessage}</p>
+            <button
+              onClick={() => {
+                setShowRemoveErrorPopup(false);
+                setRemoveErrorMessage('');
+              }}
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+      </div>
     </div>
   );
 };
