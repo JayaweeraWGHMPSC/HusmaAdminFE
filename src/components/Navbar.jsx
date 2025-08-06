@@ -1,11 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import HusmahLogo from './HusmahLogo'
 
-export default function Navbar({ currentPage, setCurrentPage, user, onLogout }) {
+export default function Navbar({ user, onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuRef = useRef(null)
+  const router = useRouter()
+  const pathname = usePathname()
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -32,19 +35,19 @@ export default function Navbar({ currentPage, setCurrentPage, user, onLogout }) 
   }
 
   const handleGiveAccess = () => {
-    setCurrentPage('giveAccess')
+    router.push('/giveaccess')
   }
 
   const handleChangePassword = () => {
-    setCurrentPage('changePassword')
+    router.push('/changepassword')
   }
 
   const handleProject = () => {
-    setCurrentPage('project')
+    router.push('/project')
   }
 
   return (
-    <nav className="bg-white shadow-md border-b border-gray-200">
+    <nav className="bg-white shadow-md border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
       <div className="max-w-7xl mx-auto pl-2 pr-4 sm:pl-2 sm:pr-6 lg:pl-2 lg:pr-8">
         <div className="flex justify-between items-center h-16">
           {/* Left side - Logo and Company Name (Desktop) */}
@@ -99,7 +102,7 @@ export default function Navbar({ currentPage, setCurrentPage, user, onLogout }) 
         {isMenuOpen && (
           <div 
             ref={menuRef}
-            className="md:hidden absolute right-4 top-16 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-48"
+            className="md:hidden absolute right-4 top-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-48"
           >
             <div className="py-2">
               {/* User Info (Mobile) */}
