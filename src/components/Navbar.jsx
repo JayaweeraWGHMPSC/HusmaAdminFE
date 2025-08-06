@@ -59,8 +59,7 @@ export default function Navbar({ user, onLogout }) {
               <span className="flex items-end space-x-2">
                 <span className="font-extrabold text-[#3066d9] tracking-wide text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl">HUSMA</span>
                 <span className="font-extrabold text-[#303030] tracking-wide text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl">ENGINEERING</span>
-                <span className="font-extrabold text-[#303030] tracking-wide text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl">(PVT)</span>
-                <span className="font-extrabold text-[#303030] tracking-wide text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl">Ltd</span>
+
               </span>
             </div>
           </div>
@@ -109,11 +108,7 @@ export default function Navbar({ user, onLogout }) {
               {user && (
                 <div className="px-4 py-3 border-b border-gray-200">
                   <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white text-lg font-medium">
-                        {user.name?.charAt(0)?.toUpperCase() || 'U'}
-                      </span>
-                    </div>
+                    
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-gray-900">{user.name}</span>
                       <span className="text-xs text-gray-500">{user.email}</span>
@@ -128,7 +123,7 @@ export default function Navbar({ user, onLogout }) {
                   setIsMenuOpen(false);
                 }}
                 className={`flex items-center w-full px-4 py-3 text-sm font-medium transition-colors duration-200 ${
-                  currentPage === 'project'
+                  pathname === '/project'
                     ? 'text-white bg-blue-600 hover:bg-blue-700'
                     : 'text-blue-600 hover:bg-blue-50'
                 }`}
@@ -144,7 +139,7 @@ export default function Navbar({ user, onLogout }) {
                   setIsMenuOpen(false);
                 }}
                 className={`flex items-center w-full px-4 py-3 text-sm font-medium transition-colors duration-200 ${
-                  currentPage === 'giveAccess'
+                  pathname === '/giveaccess'
                     ? 'text-white bg-blue-600 hover:bg-blue-700'
                     : 'text-blue-600 hover:bg-blue-50'
                 }`}
@@ -160,9 +155,9 @@ export default function Navbar({ user, onLogout }) {
                   setIsMenuOpen(false);
                 }}
                 className={`flex items-center w-full px-4 py-3 text-sm font-medium transition-colors duration-200 ${
-                  currentPage === 'changePassword'
-                    ? 'text-white bg-green-600 hover:bg-green-700'
-                    : 'text-green-600 hover:bg-green-50'
+                  pathname === '/changepassword'
+                    ? 'text-white bg-blue-600 hover:bg-blue-700'
+                    : 'text-blue-600 hover:bg-blue-50'
                 }`}
               >
                 <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

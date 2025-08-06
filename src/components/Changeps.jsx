@@ -16,7 +16,9 @@ export default function ChangePassword() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState('');
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Get user email from localStorage or session when component mounts
   useEffect(() => {
@@ -97,7 +99,8 @@ export default function ChangePassword() {
     if (!validateForm()) return;
     
     setIsLoading(true);
-    setSuccessMessage('');
+    setShowSuccessPopup(false);
+    setShowErrorPopup(false);
     
     try {
       // Prepare the request payload
@@ -113,7 +116,7 @@ export default function ChangePassword() {
         newPassword: '***'
       });
       
-      const response = await fetch('http://localhost:5001/api/Auth/user-change-password', {
+      const response = await fetch('/api/auth/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +140,7 @@ export default function ChangePassword() {
       const result = await response.json();
       console.log('Password change successful:', result);
       
-      setSuccessMessage('Password changed successfully!');
+      setShowSuccessPopup(true);
       
       // Reset form after successful change
       setFormData({
@@ -148,7 +151,8 @@ export default function ChangePassword() {
       
     } catch (error) {
       console.error('Password change error:', error);
-      setErrors({ general: error.message || 'Failed to change password. Please try again.' });
+      setErrorMessage(error.message || 'Failed to change password. Please try again.');
+      setShowErrorPopup(true);
     } finally {
       setIsLoading(false);
     }
@@ -161,28 +165,22 @@ export default function ChangePassword() {
       confirmPassword: ''
     });
     setErrors({});
-    setSuccessMessage('');
+    setShowSuccessPopup(false);
+    setShowErrorPopup(false);
   };
 
   return (
-    <div className="min-h-screen bg-white py-4 sm:py-6 lg:py-8 px-2 sm:px-4 lg:px-8">
+    <div className="min-h-screen bg-white py-2 sm:py-4 lg:py-6 px-2 sm:px-4 lg:px-8">
       <div className="w-full max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 lg:p-8 w-full">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-husmah-primary mb-2">
+        <div className="bg-white rounded-lg shadow-lg p-3 sm:p-4 lg:p-6 w-full">
+          <div className="text-center mb-4 sm:mb-6">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-husmah-primary mb-2">
               Change Password
             </h1>
-            <p className="text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600">
               Update your account password for better security
             </p>
           </div>
-
-          {/* Success Message */}
-          {successMessage && (
-            <div className="mb-4 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-sm">
-              {successMessage}
-            </div>
-          )}
 
           {/* General Error Message */}
           {errors.general && (
@@ -367,6 +365,59 @@ export default function ChangePassword() {
           </div>
         </div>
       </div>
+
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-80 sm:w-96 shadow-2xl border-2 border-green-200">
+            <div className="flex items-center mb-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Success!</h3>
+            </div>
+            <p className="text-gray-600 mb-6 text-sm">Password changed successfully! Your account is now more secure.</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowSuccessPopup(false)}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Popup */}
+      {showErrorPopup && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-80 sm:w-96 shadow-2xl border-2 border-red-200">
+            <div className="flex items-center mb-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Error</h3>
+            </div>
+            <p className="text-gray-600 mb-6 text-sm">{errorMessage}</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  setShowErrorPopup(false);
+                  setErrorMessage('');
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

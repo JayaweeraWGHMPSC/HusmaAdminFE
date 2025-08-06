@@ -42,7 +42,7 @@ const Access = () => {
           
           if (userEmail) {
             // Fetch user details from API
-            const response = await fetch(`http://localhost:5001/api/Auth/user/${userEmail}`, {
+            const response = await fetch(`/api/auth/user/${userEmail}`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json'
@@ -81,7 +81,7 @@ const Access = () => {
   const fetchAllUsers = async () => {
     setIsLoadingUsers(true);
     try {
-      const response = await fetch('http://localhost:5001/api/Auth/users', {
+      const response = await fetch('/api/auth/users', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -126,7 +126,7 @@ const Access = () => {
   const confirmRemoveUser = async () => {
     setShowRemoveConfirmPopup(false);
     try {
-      const response = await fetch(`http://localhost:5001/api/Auth/user/${userToRemove.email}`, {
+      const response = await fetch(`/api/auth/user/${userToRemove.email}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
@@ -250,7 +250,7 @@ const Access = () => {
 
     setIsCheckingEmail(true);
     try {
-      const response = await fetch(`http://localhost:5001/api/Auth/user/${email}`, {
+      const response = await fetch(`/api/auth/user/${email}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -349,7 +349,7 @@ const Access = () => {
         position: formData.position
       };
 
-      const response = await fetch('http://localhost:5001/api/user/register', {
+      const response = await fetch('/api/user/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -389,91 +389,95 @@ const Access = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-6 px-2 sm:px-4 lg:px-8 ">
-      <div className="w-full max-w-6xl mx-auto space-y-6">
+    <div className="min-h-screen bg-white py-2 sm:py-4 lg:py-6 px-2 sm:px-4 lg:px-8">
+      <div className="w-full max-w-6xl mx-auto space-y-4 sm:space-y-6">
         
         {/* Existing Users Section */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="bg-blue-50 px-6 py-4 border-b border-blue-200">
-            <div className="flex items-center justify-between">
+          <div className="bg-blue-50 px-3 sm:px-6 py-3 sm:py-4 border-b border-blue-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
-                <h2 className="text-2xl font-bold text-blue-800">Existing Users</h2>
-                <p className="text-blue-600 text-sm mt-1">Manage system users and their access levels</p>
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-800">Existing Users</h2>
+                <p className="text-blue-600 text-xs sm:text-sm mt-1">Manage system users and their access levels</p>
               </div>
               <button
                 onClick={fetchAllUsers}
                 disabled={isLoadingUsers}
-                className="px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
+                className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 self-start sm:self-auto"
               >
                 {isLoadingUsers ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-2 h-3 w-3 sm:h-4 sm:w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Refreshing...
+                    <span className="hidden sm:inline">Refreshing...</span>
+                    <span className="sm:hidden">...</span>
                   </>
                 ) : (
                   <>
-                    Refresh
+                    <span className="hidden sm:inline">Refresh</span>
+                    <span className="sm:hidden">⟳</span>
                   </>
                 )}
               </button>
             </div>
           </div>
           
-          <div className="p-6">
+          <div className="p-3 sm:p-6">
             {isLoadingUsers ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                <span className="ml-3 text-gray-600">Loading users...</span>
+              <div className="flex items-center justify-center py-6 sm:py-8">
+                <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <span className="ml-3 text-gray-600 text-sm sm:text-base">Loading users...</span>
               </div>
             ) : allUsers.length === 0 ? (
-              <div className="text-center py-8">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="text-center py-6 sm:py-8">
+                <svg className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                 </svg>
                 <h3 className="mt-2 text-sm font-medium text-gray-900">No users found</h3>
-                <p className="mt-1 text-sm text-gray-500">Get started by creating a new user.</p>
+                <p className="mt-1 text-xs sm:text-sm text-gray-500">Get started by creating a new user.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Email</th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {allUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                          <div className="text-xs sm:text-sm font-medium text-gray-900">{user.name}</div>
+                          <div className="text-xs text-gray-500 sm:hidden">{user.email}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
                           <div className="text-sm text-gray-900">{user.email}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                             user.position === 'superadmin' 
                               ? 'bg-purple-100 text-purple-800' 
                               : 'bg-blue-100 text-blue-800'
                           }`}>
-                            {user.position === 'superadmin' ? 'Super Admin' : 'Admin'}
+                            <span className="hidden sm:inline">{user.position === 'superadmin' ? 'Super Admin' : 'Admin'}</span>
+                            <span className="sm:hidden">{user.position === 'superadmin' ? 'S.Admin' : 'Admin'}</span>
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium">
                           <button
                             onClick={() => handleRemoveUser(user.email, user.name)}
-                            className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                            className="inline-flex items-center px-2 sm:px-3 py-1 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
                           >
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
-                            Remove
+                            <span className="hidden sm:inline">Remove</span>
                           </button>
                         </td>
                       </tr>
@@ -488,13 +492,13 @@ const Access = () => {
         {/* Create User Form */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Header */}
-          <div className="bg-green-50 px-6 py-4 border-b border-green-200">
-            <h2 className="text-2xl font-bold text-green-800">Create User Access</h2>
-            <p className="text-green-600 text-sm mt-1">Grant system access to new users</p>
+          <div className="bg-green-50 px-3 sm:px-6 py-3 sm:py-4 border-b border-green-200">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-green-800">Create User Access</h2>
+            <p className="text-green-600 text-xs sm:text-sm mt-1">Grant system access to new users</p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="px-6 py-6 space-y-4">
+          <form onSubmit={handleSubmit} className="px-3 sm:px-6 py-4 sm:py-6 space-y-3 sm:space-y-4">
           {/* Name Field */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -657,11 +661,11 @@ const Access = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="pt-4">
+          <div className="pt-3 sm:pt-4">
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+              className={`w-full flex justify-center py-2 sm:py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
                 isSubmitting
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
@@ -669,7 +673,7 @@ const Access = () => {
             >
               {isSubmitting ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin -ml-1 mr-3 h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -683,7 +687,7 @@ const Access = () => {
         </form>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 border-t border-gray-200">
           <p className="text-xs text-gray-500 text-center">
             * All fields are required. Password must be at least 8 characters with uppercase, lowercase, and number.
           </p>
@@ -692,30 +696,32 @@ const Access = () => {
 
       {/* Confirmation Popup */}
       {showConfirmPopup && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4">
-            <div className="flex items-center mb-4">
-              <svg className="h-7 w-7 text-orange-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.862-.833-2.632 0L4.182 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-80 sm:w-96 shadow-2xl border-2 border-orange-200">
+            <div className="flex items-center mb-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+                <svg className="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.862-.833-2.632 0L4.182 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
               <h3 className="text-lg font-semibold text-gray-900">Confirm User Creation</h3>
             </div>
-            <p className="text-sm text-gray-700 mb-3">Are you sure you want to create access for the following user?</p>
+            <p className="text-gray-600 mb-3 text-sm">Are you sure you want to create access for the following user?</p>
             <div className="bg-gray-50 text-black p-3 rounded-md mb-4">
               <p className="text-sm"><strong>Name:</strong> {formData.name}</p>
               <p className="text-sm"><strong>Position:</strong> {formData.position === 'admin' ? 'Admin' : 'Super Admin'}</p>
               <p className="text-sm"><strong>Email:</strong> {formData.email}</p>
             </div>
-            <div className="flex gap-3 mt-2">
+            <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowConfirmPopup(false)}
-                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmedSubmit}
-                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               >
                 Confirm
               </button>
@@ -726,32 +732,34 @@ const Access = () => {
 
       {/* Remove User Confirmation Popup */}
       {showRemoveConfirmPopup && userToRemove && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4">
-            <div className="flex items-center mb-4">
-              <svg className="h-7 w-7 text-red-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.862-.833-2.632 0L4.182 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-80 sm:w-96 shadow-2xl border-2 border-red-200">
+            <div className="flex items-center mb-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.862-.833-2.632 0L4.182 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
               <h3 className="text-lg font-semibold text-gray-900">Confirm User Removal</h3>
             </div>
-            <p className="text-sm text-gray-700 mb-3">Are you sure you want to remove access for the following user?</p>
+            <p className="text-gray-600 mb-3 text-sm">Are you sure you want to remove access for the following user?</p>
             <div className="bg-red-50 p-3 rounded-md mb-4 border border-red-200">
               <p className="text-sm text-red-800"><strong>User:</strong> {userToRemove.name}</p>
               <p className="text-xs text-red-600 mt-1">This action cannot be undone.</p>
             </div>
-            <div className="flex gap-3 mt-4">
+            <div className="flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowRemoveConfirmPopup(false);
                   setUserToRemove(null);
                 }}
-                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmRemoveUser}
-                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
               >
                 Remove User
               </button>
@@ -762,90 +770,106 @@ const Access = () => {
 
       {/* Success Popup */}
       {showSuccessPopup && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4 text-center">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-              <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-80 sm:w-96 shadow-2xl border-2 border-green-200">
+            <div className="flex items-center mb-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Success!</h3>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Success!</h3>
-            <p className="text-sm text-gray-700 mb-6">User access has been created successfully. The user will receive login credentials via email.</p>
-            <button
-              onClick={() => setShowSuccessPopup(false)}
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
-            >
-              Close
-            </button>
+            <p className="text-gray-600 mb-6 text-sm">User access has been created successfully. The user will receive login credentials via email.</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowSuccessPopup(false)}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Create User Error Popup */}
       {showErrorPopup && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4 text-center">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-80 sm:w-96 shadow-2xl border-2 border-red-200">
+            <div className="flex items-center mb-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Error</h3>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Error</h3>
-            <p className="text-sm text-gray-700 mb-6">{errorMessage}</p>
-            <button
-              onClick={() => {
-                setShowErrorPopup(false);
-                setErrorMessage('');
-              }}
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-            >
-              Close
-            </button>
+            <p className="text-gray-600 mb-6 text-sm">{errorMessage}</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  setShowErrorPopup(false);
+                  setErrorMessage('');
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Remove Success Popup */}
       {showRemoveSuccessPopup && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4 text-center">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-              <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-80 sm:w-96 shadow-2xl border-2 border-green-200">
+            <div className="flex items-center mb-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">User Removed</h3>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">User Removed</h3>
-            <p className="text-sm text-gray-700 mb-6">User access has been removed successfully.</p>
-            <button
-              onClick={() => setShowRemoveSuccessPopup(false)}
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
-            >
-              Close
-            </button>
+            <p className="text-gray-600 mb-6 text-sm">User access has been removed successfully.</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowRemoveSuccessPopup(false)}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Remove Error Popup */}
       {showRemoveErrorPopup && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border border-gray-300 mx-4 text-center">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-80 sm:w-96 shadow-2xl border-2 border-red-200">
+            <div className="flex items-center mb-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Error</h3>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Error</h3>
-            <p className="text-sm text-gray-700 mb-6">{removeErrorMessage}</p>
-            <button
-              onClick={() => {
-                setShowRemoveErrorPopup(false);
-                setRemoveErrorMessage('');
-              }}
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-            >
-              Close
-            </button>
+            <p className="text-gray-600 mb-6 text-sm">{removeErrorMessage}</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  setShowRemoveErrorPopup(false);
+                  setRemoveErrorMessage('');
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -203,7 +203,7 @@ export default function AddNew() {
     };
 
     try {
-      const response = await fetch('http://localhost:5001/api/project/comprehensive', {
+      const response = await fetch('/api/projects/comprehensive', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -246,33 +246,39 @@ export default function AddNew() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8 relative">
+    <div className="min-h-screen bg-white py-2 sm:py-4 lg:py-6 px-2 sm:px-4 lg:px-8 relative">
       {showSuccessPopup && (
-        <div className="absolute left-0 right-0 mx-auto top-8 z-50 flex justify-center pointer-events-none">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl border border-gray-200 pointer-events-auto text-center">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-              <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-80 sm:w-96 shadow-2xl border-2 border-green-200">
+            <div className="flex items-center mb-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Success!</h3>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Success!</h3>
-            <p className="text-sm text-gray-700 mb-6">Project has been created successfully.</p>
-            <button
-              onClick={() => setShowSuccessPopup(false)}
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
-            >
-              Close
-            </button>
+            <p className="text-gray-600 mb-6 text-sm">
+              Project has been created successfully.
+            </p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowSuccessPopup(false)}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg p-4 sm:p-6 lg:p-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-husmah-primary mb-6 sm:mb-8 text-center">
+        <div className="bg-white rounded-lg p-3 sm:p-4 lg:p-6">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-husmah-primary mb-4 sm:mb-6 text-center">
             Add New Project
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 lg:space-y-6">
             {/* Status */}
             <div>
               <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
@@ -400,19 +406,19 @@ export default function AddNew() {
               {allImagesPreviews.length > 0 && (
                 <div className="mt-4">
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Image Previews:</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
                     {allImagesPreviews.map((preview, index) => (
                       <div key={index} className="relative group">
                         <img
                           src={preview}
                           alt={`Preview ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-md border border-gray-300"
+                          className="w-full h-24 sm:h-32 object-cover rounded-md border border-gray-300"
                         />
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
                           disabled={isSubmitting}
-                          className={`absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 ${isSubmitting ? 'cursor-not-allowed opacity-30' : ''}`}
+                          className={`absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-90 sm:opacity-0 sm:group-hover:opacity-100 ${isSubmitting ? 'cursor-not-allowed opacity-30' : ''}`}
                           title="Remove image"
                         >
                           ×

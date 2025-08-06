@@ -56,7 +56,7 @@ export default function Login({ onLoginSuccess }) {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://localhost:5001/api/user/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +88,15 @@ export default function Login({ onLoginSuccess }) {
       
     } catch (error) {
       console.error('Login error:', error);
-      setErrors({ general: 'Connection error. Please check if the server is running.' });
+      
+      // Provide more specific error messages
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        setErrors({ general: 'Cannot connect to server. This might be a CORS issue or the server is not responding. Please ensure your backend server is running and configured to allow requests from localhost:3000.' });
+      } else if (error.name === 'TypeError') {
+        setErrors({ general: 'Network error. Please check your internet connection and try again.' });
+      } else {
+        setErrors({ general: 'Connection error. Please check if the server is running.' });
+      }
     } finally {
       setIsLoading(false);
     }

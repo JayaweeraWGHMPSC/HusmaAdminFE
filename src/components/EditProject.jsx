@@ -32,6 +32,28 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
   const [imagesToRemove, setImagesToRemove] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
 
+  const fetchProjectData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/projects/${id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch project data');
+      }
+      const projectData = await response.json();
+      console.log('Fetched project data:', projectData);
+      
+      // Log image URLs for debugging
+      console.log('Main image URL:', projectData.mainImage);
+      console.log('Additional images:', projectData.allImages);
+      
+      setFormData(projectData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
@@ -52,28 +74,6 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
       });
     };
   }, [previewImages]);
-
-  const fetchProjectData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`http://localhost:5001/api/Project/${id}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch project data');
-      }
-      const projectData = await response.json();
-      console.log('Fetched project data:', projectData);
-      
-      // Log image URLs for debugging
-      console.log('Main image URL:', projectData.mainImage);
-      console.log('Additional images:', projectData.allImages);
-      
-      setFormData(projectData);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
@@ -346,7 +346,7 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
       console.log('Final form data:', updatedFormData);
       console.log('Images to remove:', imagesToRemove);
 
-      const response = await fetch(`http://localhost:5001/api/Project/${id}`, {
+      const response = await fetch(`/api/projects/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -403,15 +403,15 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
   }
 
   return (
-    <div className="min-h-screen bg-white py-6 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-2 sm:py-4 lg:py-6 px-2 sm:px-4 lg:px-8">
       <div className="max-w-2xl mx-auto bg-white rounded-lg overflow-hidden">
-        <div className="px-6 py-4 mt-5">
-          <h2 className="text-3xl font-bold text-husmah-primary text-center">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 mt-3 sm:mt-5">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-husmah-primary text-center">
             Edit Project
           </h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-6 space-y-4">
+        <form onSubmit={handleSubmit} className="px-3 sm:px-6 py-4 sm:py-6 space-y-3 sm:space-y-4">
           {/* Project Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -557,19 +557,19 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
             {formData.allImages.length > 0 && (
               <div className="mt-2">
                 <p className="text-sm text-gray-600 mb-2">Current Images:</p>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
                   {formData.allImages.map((img, index) => (
                     <div key={index} className="relative">
                       <img
                         src={img}
                         alt={`Additional image ${index + 1}`}
-                        className="h-24 w-full object-cover rounded-md border"
+                        className="h-20 sm:h-24 w-full object-cover rounded-md border"
                       />
                       <button
                         type="button"
                         onClick={() => removeExistingImage(img, index)}
                         disabled={isSubmitting}
-                        className={`absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
+                        className={`absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs hover:bg-red-600 ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                       >
                         ×
                       </button>
@@ -583,19 +583,19 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
             {previewImages.length > 0 && (
               <div className="mt-4">
                 <p className="text-sm text-gray-600 mb-2">New Images to Add:</p>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
                   {previewImages.map((preview, index) => (
                     <div key={index} className="relative">
                       <img
                         src={preview.url}
                         alt={`New image ${index + 1}`}
-                        className="h-24 w-full object-cover rounded-md border border-green-300"
+                        className="h-20 sm:h-24 w-full object-cover rounded-md border border-green-300"
                       />
                       <button
                         type="button"
                         onClick={() => removeNewImage(index)}
                         disabled={isSubmitting}
-                        className={`absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
+                        className={`absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs hover:bg-red-600 ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
                       >
                         ×
                       </button>
@@ -702,19 +702,19 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end space-x-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-end">
             <button
               type="button"
               onClick={onCancel}
               disabled={isSubmitting}
-              className={`px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
+              className={`w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 order-2 sm:order-1 ${isSubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`px-4 py-2 text-sm font-medium text-white rounded-md ${
+              className={`w-full sm:w-auto px-4 py-2 text-sm font-medium text-white rounded-md order-1 sm:order-2 ${
                 isSubmitting
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700'
@@ -728,15 +728,16 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
 
       {/* Confirm Popup */}
       {showConfirmPopup && (
-        <div className="fixed left-0 right-0 top-8 mx-auto z-50 flex justify-center">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl border border-gray-200">
-            <div className="text-center mb-4">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
-                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowConfirmPopup(false)}></div>
+          <div className="bg-white rounded-lg p-4 sm:p-6 max-w-sm sm:max-w-md w-full shadow-xl border border-gray-200 relative">
+            <div className="text-center mb-3 sm:mb-4">
+              <div className="mx-auto flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-blue-100 mb-3 sm:mb-4">
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                 Confirm Changes
               </h3>
               <p className="text-sm text-gray-600">
@@ -750,16 +751,16 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
                 )}
               </p>
             </div>
-            <div className="flex justify-center space-x-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-center">
               <button
                 onClick={() => setShowConfirmPopup(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 order-2 sm:order-1"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmedSubmit}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 order-1 sm:order-2"
               >
                 Save Changes
               </button>
@@ -770,11 +771,12 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
 
       {/* Success Popup */}
       {showSuccessPopup && (
-        <div className="fixed left-0 right-0 top-8 mx-auto z-50 flex justify-center pointer-events-none">
-          <div className="bg-white rounded-lg p-4 shadow-xl border border-gray-200 pointer-events-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowSuccessPopup(false)}></div>
+          <div className="bg-white rounded-lg p-4 shadow-xl border border-gray-200 relative">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg className="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -790,11 +792,12 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
 
       {/* Error Popup */}
       {error && (
-        <div className="fixed left-0 right-0 top-8 mx-auto z-50 flex justify-center pointer-events-none">
-          <div className="bg-white rounded-lg p-4 shadow-xl border border-red-200 pointer-events-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setError(null)}></div>
+          <div className="bg-white rounded-lg p-4 shadow-xl border border-red-200 relative">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg className="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>

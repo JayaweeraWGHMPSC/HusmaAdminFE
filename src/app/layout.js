@@ -58,7 +58,7 @@ export default function RootLayout({ children }) {
   if (isLoading) {
     return (
       <html lang="en">
-        <body className={inter.className}>
+        <body className={inter.className} suppressHydrationWarning={true}>
           <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -74,7 +74,7 @@ export default function RootLayout({ children }) {
   if (!isAuthenticated) {
     return (
       <html lang="en">
-        <body className={inter.className}>
+        <body className={inter.className} suppressHydrationWarning={true}>
           <main>
             <Login onLoginSuccess={handleLoginSuccess} />
           </main>
@@ -89,7 +89,7 @@ export default function RootLayout({ children }) {
   const Left = require('../components/Left').default;
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning={true}>
         <Navbar 
           user={user}
           onLogout={handleLogout}
