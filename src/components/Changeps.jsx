@@ -359,7 +359,7 @@ export default function ChangePassword() {
           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
             <h3 className="text-sm font-medium text-blue-800 mb-2">Security Tips:</h3>
             <ul className="text-xs text-blue-700 space-y-1">
-              <li>• Use a unique password that you don't use elsewhere</li>
+              <li>• Use a unique password that you don&apos;t use elsewhere</li>
               <li>• Include a mix of letters, numbers, and symbols</li>
               <li>• Avoid using personal information in your password</li>
               <li>• Consider using a password manager</li>

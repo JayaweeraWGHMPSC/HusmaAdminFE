@@ -158,7 +158,7 @@ const Project = ({ onEditProject }) => {
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Delete</h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete "{selectedProject.name}"? This action cannot be undone.
+              Are you sure you want to delete &quot;{selectedProject.name}&quot;? This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-4">
               <button

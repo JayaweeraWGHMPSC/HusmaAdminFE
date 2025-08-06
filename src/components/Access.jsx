@@ -188,7 +188,7 @@ const Access = () => {
             </div>
             <h2 className="text-2xl font-bold text-red-800 mb-2">Access Denied</h2>
             <p className="text-red-700 mb-4">
-              You don't have permission to access this feature. Only Super Admin users can manage user access.
+              You don&apos;t have permission to access this feature. Only Super Admin users can manage user access.
             </p>
             
             <button

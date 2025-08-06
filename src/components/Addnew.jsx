@@ -456,7 +456,7 @@ export default function AddNew() {
                 />
               )}
               {!formData.area.enabled && (
-                <p className="text-gray-500 text-sm">None - Click "Add Details" to include area information</p>
+                <p className="text-gray-500 text-sm">None - Click &quot;Add Details&quot; to include area information</p>
               )}
             </div>
 
@@ -489,7 +489,7 @@ export default function AddNew() {
                 />
               )}
               {!formData.flow.enabled && (
-                <p className="text-gray-500 text-sm">None - Click "Add Details" to include flow information</p>
+                <p className="text-gray-500 text-sm">None - Click &quot;Add Details&quot; to include flow information</p>
               )}
             </div>
 
@@ -522,7 +522,7 @@ export default function AddNew() {
                 />
               )}
               {!formData.bedrooms.enabled && (
-                <p className="text-gray-500 text-sm">None - Click "Add Details" to include bedroom information</p>
+                <p className="text-gray-500 text-sm">None - Click &quot;Add Details&quot; to include bedroom information</p>
               )}
             </div>
 
@@ -555,7 +555,7 @@ export default function AddNew() {
                 />
               )}
               {!formData.bathrooms.enabled && (
-                <p className="text-gray-500 text-sm">None - Click "Add Details" to include bathroom information</p>
+                <p className="text-gray-500 text-sm">None - Click &quot;Add Details&quot; to include bathroom information</p>
               )}
             </div>
 

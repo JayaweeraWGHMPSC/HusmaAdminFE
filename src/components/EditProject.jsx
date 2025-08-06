@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
 const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
@@ -39,7 +39,7 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
       // Fetch project data if only ID is provided
       fetchProjectData();
     }
-  }, [initialData, id]);
+  }, [initialData, id, fetchProjectData]);
 
   // Cleanup effect for object URLs
   useEffect(() => {
@@ -53,7 +53,7 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
     };
   }, [previewImages]);
 
-  const fetchProjectData = async () => {
+  const fetchProjectData = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`http://localhost:5001/api/Project/${id}`);
@@ -73,7 +73,7 @@ const EditProject = ({ id, initialData, onSuccess, onCancel }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
