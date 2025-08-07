@@ -212,15 +212,21 @@ export default function ChangePassword() {
                   name="currentPassword"
                   value={formData.currentPassword}
                   onChange={handleInputChange}
+                  disabled={isLoading}
                   className={`w-full px-3 py-2 border ${
                     errors.currentPassword ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent pr-10 text-black`}
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent pr-10 text-black ${
+                    isLoading ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''
+                  }`}
                   placeholder="Enter your current password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className={`absolute inset-y-0 right-0 pr-3 flex items-center ${
+                    isLoading ? 'cursor-not-allowed opacity-60' : ''
+                  }`}
                   onClick={() => togglePasswordVisibility('current')}
+                  disabled={isLoading}
                 >
                   {showPasswords.current ? (
                     <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -251,15 +257,21 @@ export default function ChangePassword() {
                   name="newPassword"
                   value={formData.newPassword}
                   onChange={handleInputChange}
+                  disabled={isLoading}
                   className={`w-full px-3 py-2 border ${
                     errors.newPassword ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent pr-10 text-black`}
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent pr-10 text-black ${
+                    isLoading ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''
+                  }`}
                   placeholder="Enter your new password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className={`absolute inset-y-0 right-0 pr-3 flex items-center ${
+                    isLoading ? 'cursor-not-allowed opacity-60' : ''
+                  }`}
                   onClick={() => togglePasswordVisibility('new')}
+                  disabled={isLoading}
                 >
                   {showPasswords.new ? (
                     <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -293,15 +305,21 @@ export default function ChangePassword() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
+                  disabled={isLoading}
                   className={`w-full px-3 py-2 border ${
                     errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent pr-10 text-black`}
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-husmah-primary focus:border-transparent pr-10 text-black ${
+                    isLoading ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''
+                  }`}
                   placeholder="Confirm your new password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className={`absolute inset-y-0 right-0 pr-3 flex items-center ${
+                    isLoading ? 'cursor-not-allowed opacity-60' : ''
+                  }`}
                   onClick={() => togglePasswordVisibility('confirm')}
+                  disabled={isLoading}
                 >
                   {showPasswords.confirm ? (
                     <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -346,7 +364,12 @@ export default function ChangePassword() {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="flex-1 bg-gray-500 text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm sm:text-base"
+                disabled={isLoading}
+                className={`flex-1 py-2.5 sm:py-3 px-4 sm:px-6 rounded-md transition-colors font-medium text-sm sm:text-base ${
+                  isLoading
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-gray-500 text-white hover:bg-gray-600'
+                }`}
               >
                 Cancel
               </button>
