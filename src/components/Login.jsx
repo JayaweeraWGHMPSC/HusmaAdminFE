@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import HusmahLogo from './HusmahLogo';
+import { SessionManager, setupActivityMonitoring } from '../utils/sessionManager';
 
 export default function Login({ onLoginSuccess }) {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -11,6 +14,33 @@ export default function Login({ onLoginSuccess }) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  // Session timeout - let sessionTimer = null;
+
+  // Check if user is already logged in
+  useEffect(() => {
+    if (SessionManager.isSessionValid()) {
+      // User still has valid session, redirect to dashboard
+      router.push('/project');
+    }
+  }, [router]);
+
+  // Handle logout
+  const handleLogout = () => {
+    SessionManager.clearSession();
+    router.push('/login');
+  };
+
+  // Setup activity monitoring for session management
+  useEffect(() => {
+    const cleanupActivity = setupActivityMonitoring(() => {
+      router.push('/login');
+    });
+
+    return () => {
+      cleanupActivity();
+    };
+  }, [router]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -72,14 +102,21 @@ export default function Login({ onLoginSuccess }) {
       if (response.ok && data.success) {
         console.log('Login successful:', data);
         
-        // Store user data in localStorage (you might want to use a more secure method)
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('lastLoginAt', data.user.lastLoginAt);
+        // Store user data using SessionManager
+        SessionManager.setUser(data.user);
+        
+        // Setup session timeout
+        SessionManager.setupTimeout(() => {
+          router.push('/login');
+        });
         
         // Call the parent callback to update authentication state
         if (onLoginSuccess) {
           onLoginSuccess(data.user);
         }
+        
+        // Redirect to dashboard
+        router.push('/project');
         
       } else {
         // Handle API error response
