@@ -58,6 +58,10 @@ export default function RootLayout({ children }) {
   if (isLoading) {
     return (
       <html lang="en">
+        <head>
+          <title>Husma Engineering</title>
+          <link rel="icon" href="/logo.png" />
+        </head>
         <body className={inter.className} suppressHydrationWarning={true}>
           <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
             <div className="text-center">
@@ -74,6 +78,10 @@ export default function RootLayout({ children }) {
   if (!isAuthenticated) {
     return (
       <html lang="en">
+        <head>
+          <title>Husma Engineering</title>
+          <link rel="icon" href="/logo.png" />
+        </head>
         <body className={inter.className} suppressHydrationWarning={true}>
           <main>
             <Login onLoginSuccess={handleLoginSuccess} />
@@ -89,6 +97,10 @@ export default function RootLayout({ children }) {
   const Left = require('../components/Left').default;
   return (
     <html lang="en">
+      <head>
+        <title>Husma Engineering</title>
+        <link rel="icon" href="/logo.png" />
+      </head>
       <body className={inter.className} suppressHydrationWarning={true}>
         <Navbar 
           user={user}
